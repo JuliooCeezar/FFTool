@@ -1,0 +1,25 @@
+name: Build FFTool APK
+on:
+  push:
+    branches: [ principal ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Extrair zip
+        run: unzip FFTool_source_v2.zip
+      - name: Permissao gradlew
+        run: chmod +x FFTool/gradlew
+      - name: Build APK
+        run: cd FFTool && ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FFTool-APK
+          path: FFTool/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
