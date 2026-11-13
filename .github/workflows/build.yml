@@ -13,13 +13,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Extrair zip
-        run: unzip FFTool_source_v2.zip
+        run: |
+          unzip FFTool_source_v2.zip
+          echo "=== estrutura ==="
+          find . -name "gradlew" 2>/dev/null
       - name: Permissao gradlew
-        run: chmod +x FFTool/gradlew
+        run: chmod +x $(find . -name "gradlew" | head -1)
       - name: Build APK
-        run: cd FFTool && ./gradlew assembleDebug --no-daemon
+        run: |
+          DIR=$(find . -name "gradlew" | head -1 | xargs dirname)
+          cd $DIR && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: FFTool-APK
-          path: FFTool/app/build/outputs/apk/debug/app-debug.apk
+          path: "**/outputs/apk/**/*.apk"
           retention-days: 30
